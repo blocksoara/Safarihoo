@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Safarihoo - Explore the World With Confidence</title>
+    <meta name="description" content="Seamless global travel planning, personalized experiences, and trusted booking — all in one place." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://tpemd.com">
+    <link rel="dns-prefetch" href="https://tp.media">
+    <link rel="dns-prefetch" href="https://yasen.hotellook.com">
+    <link rel="dns-prefetch" href="https://hotellook.com">
+    <link rel="dns-prefetch" href="https://c87.travelpayouts.com">
+    <link rel="dns-prefetch" href="https://c120.travelpayouts.com">
+    <link rel="dns-prefetch" href="https://c121.travelpayouts.com">
+    <link rel="dns-prefetch" href="https://www.travelpayouts.com">
+    <link rel="dns-prefetch" href="https://c143.travelpayouts.com">
+    <link rel="dns-prefetch" href="https://www.trip.com">
+    <link rel="dns-prefetch" href="https://fr.trip.com">
+    <link rel="dns-prefetch" href="https://static.airhelp.com">
+    <link rel="preload" as="image" href="https://res.cloudinary.com/opy809y1/image/upload/v1787692461/Logo.blanc.safarihoo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+    <script>
+      (function() {
+        function isExternalIgnoredError(err) {
+          if (!err) return false;
+          var msg = (err.message || String(err)).toLowerCase();
+          var stack = (err.stack || '').toLowerCase();
+          var patterns = [
+            'failed to fetch',
+            'networkerror',
+            'load failed',
+            'timed out',
+            'timeout',
+            'request timed out',
+            'tpemd',
+            'cascoon',
+            'travelpayouts',
+            'hotellook',
+            'aviasales',
+            'airhelp',
+            'script error'
+          ];
+          for (var i = 0; i < patterns.length; i++) {
+            if (msg.indexOf(patterns[i]) !== -1 || stack.indexOf(patterns[i]) !== -1) {
+              return true;
+            }
+          }
+          return false;
+        }
+
+        window.addEventListener('unhandledrejection', function(event) {
+          if (event && isExternalIgnoredError(event.reason)) {
+            event.preventDefault();
+            if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+          }
+        }, true);
+
+        window.addEventListener('error', function(event) {
+          if (event && (isExternalIgnoredError(event.error) || isExternalIgnoredError(event.message))) {
+            event.preventDefault();
+            if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+          }
+        }, true);
+      })();
+    </script>
+  </head>
+  <body class="bg-black text-white antialiased selection:bg-blue-600 selection:text-white overflow-x-hidden min-h-screen">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
