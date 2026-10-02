@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Mail, X, CheckCircle2, Send } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Mail, Send, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 interface NewsletterModalProps {
@@ -9,34 +9,39 @@ interface NewsletterModalProps {
 
 export const NewsletterModal: React.FC<NewsletterModalProps> = ({ isOpen, onClose }) => {
   const { language } = useLanguage();
-  const isFr = language === 'FR';
-
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
-  const [preferences, setPreferences] = useState<{
-    flightDeals: boolean;
-    hotelPromos: boolean;
-    airhelpTips: boolean;
-  }>({
+  const [preferences, setPreferences] = useState({
     flightDeals: true,
     hotelPromos: true,
     airhelpTips: false,
   });
   const [submitted, setSubmitted] = useState(false);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  const isFr = language === 'FR';
+
   const t = {
-    title: isFr ? 'Lettre d’Information Safarihoo' : 'Safarihoo Travel Insider',
+    title: isFr ? 'Offres Exclusives & Alertes Prix' : 'Secret Flight Deals & Price Drops',
     subtitle: isFr
-      ? 'Recevez jusqu’à -60% sur des vols secrets, erreurs de prix et escapades exclusives directement dans votre boîte de réception.'
-      : 'Get up to 60% off secret airfares, error fares, and curated weekend getaways directly in your inbox.',
-    nameLabel: isFr ? 'Votre prénom (Optionnel)' : 'Your First Name (Optional)',
-    namePlaceholder: isFr ? 'ex. Sarah' : 'e.g. Sarah',
+      ? 'Recevez nos billets d’avion à prix cassés, réductions d’hôtels et bons plans avant tout le monde.'
+      : 'Get VIP flight discounts, secret hotel coupons, and mistake fares sent directly to your inbox.',
+    nameLabel: isFr ? 'Prénom (optionnel)' : 'First Name (optional)',
+    namePlaceholder: isFr ? 'Ex: Sophie' : 'e.g. Alex',
     emailLabel: isFr ? 'Adresse e-mail' : 'Email Address',
-    emailPlaceholder: isFr ? 'sarah@exemple.com' : 'sarah@example.com',
-    prefHeader: isFr ? 'Vos préférences de bons plans' : 'Select Deal Preferences',
-    prefFlights: isFr ? 'Vols pas chers' : 'Cheap Flights',
-    prefHotels: isFr ? 'Promos Hôtels' : 'Hotel Promos',
-    prefAirhelp: isFr ? 'Alertes AirHelp' : 'AirHelp Alerts',
+    emailPlaceholder: isFr ? 'vous@exemple.com' : 'you@example.com',
+    prefHeader: isFr ? 'Je souhaite recevoir en priorité :' : 'I want deals for:',
+    prefFlights: isFr ? 'Vols & Billets' : 'Cheap Flights',
+    prefHotels: isFr ? 'Hôtels & Séjours' : 'Hotel Discounts',
+    prefAirhelp: isFr ? 'Droits des passagers' : 'AirHelp Tips',
     noSpam: isFr
       ? 'Zéro spam. Désabonnement en 1 clic à tout moment. Consultez notre Politique de Confidentialité.'
       : 'No spam ever. 1-click unsubscribe at any time. Read our Privacy Policy.',
@@ -73,9 +78,14 @@ export const NewsletterModal: React.FC<NewsletterModalProps> = ({ isOpen, onClos
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md overflow-y-auto animate-fadeIn"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+    >
       <div 
-        className="relative w-full max-w-lg bg-zinc-950 border border-white/20 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden text-white"
+        className="relative w-full max-w-lg max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-3rem)] bg-zinc-950 border border-white/20 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-2xl overflow-y-auto overscroll-contain text-white my-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Glow background accent */}
@@ -86,10 +96,11 @@ export const NewsletterModal: React.FC<NewsletterModalProps> = ({ isOpen, onClos
         <button
           type="button"
           onClick={onClose}
+          aria-label="Fermer"
           className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer z-10"
-          title="Close newsletter popup"
+          title="Fermer"
         >
-          <X className="w-4 h-4" />
+          <X className="w-5 h-5" />
         </button>
 
         {submitted ? (
@@ -97,15 +108,15 @@ export const NewsletterModal: React.FC<NewsletterModalProps> = ({ isOpen, onClos
             <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto shadow-lg">
               <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h3 className="text-2xl font-extrabold text-white">{t.successTitle}</h3>
-            <p className="text-sm text-white/70 max-w-sm mx-auto">
+            <h3 className="text-xl sm:text-2xl font-extrabold text-white">{t.successTitle}</h3>
+            <p className="text-xs sm:text-sm text-white/70 max-w-sm mx-auto leading-relaxed">
               {t.successDesc(email)}
             </p>
             <div className="pt-2">
               <button
                 type="button"
                 onClick={handleReset}
-                className="px-6 py-2.5 rounded-full bg-[#1b64f2] hover:bg-[#1654cc] text-white text-xs font-semibold transition-all shadow-md cursor-pointer"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-[#1b64f2] hover:bg-[#1654cc] text-white text-xs font-semibold transition-all shadow-md cursor-pointer"
               >
                 {t.closeBtn}
               </button>
@@ -113,11 +124,11 @@ export const NewsletterModal: React.FC<NewsletterModalProps> = ({ isOpen, onClos
           </div>
         ) : (
           <div>
-            <div className="text-center mb-6">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#1b64f2]/20 text-[#498bf7] mb-3">
-                <Mail className="w-6 h-6" />
+            <div className="text-center mb-5 pr-8 pl-8 sm:pr-0 sm:pl-0">
+              <div className="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-[#1b64f2]/20 text-[#498bf7] mb-2.5">
+                <Mail className="w-5 h-5" />
               </div>
-              <h2 className="text-2xl font-extrabold tracking-tight text-white">
+              <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
                 {t.title}
               </h2>
               <p className="text-xs sm:text-sm text-white/60 mt-1 max-w-xs mx-auto">
@@ -193,13 +204,22 @@ export const NewsletterModal: React.FC<NewsletterModalProps> = ({ isOpen, onClos
                 {t.noSpam}
               </div>
 
-              <button
-                type="submit"
-                className="w-full py-3 rounded-full bg-[#1b64f2] hover:bg-[#1654cc] text-white font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-[0.99]"
-              >
-                <span>{t.submitBtn}</span>
-                <Send className="w-4 h-4" />
-              </button>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="sm:hidden w-full py-2.5 rounded-xl bg-white/10 text-white/80 text-xs font-semibold"
+                >
+                  Fermer
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-3 rounded-xl sm:rounded-full bg-[#1b64f2] hover:bg-[#1654cc] text-white font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-[0.99]"
+                >
+                  <span>{t.submitBtn}</span>
+                  <Send className="w-4 h-4" />
+                </button>
+              </div>
             </form>
           </div>
         )}

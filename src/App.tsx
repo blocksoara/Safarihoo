@@ -23,6 +23,7 @@ import { AirHelpModal } from './components/AirHelpModal';
 import { ContactModal } from './components/ContactModal';
 import { NewsletterModal } from './components/NewsletterModal';
 import { CookiesModal } from './components/CookiesModal';
+import { TravelAssistantChat } from './components/TravelAssistantChat';
 import { NavItem } from './types';
 
 export default function App() {
@@ -217,6 +218,11 @@ export default function App() {
       <CookiesModal
         isOpen={showCookiesModal}
         onClose={() => setShowCookiesModal(false)}
+      />
+
+      {/* AI Travel Assistant Chatbot */}
+      <TravelAssistantChat
+        onNavigateToTab={(tab) => handleNavSelect(tab)}
       />
     </div>
   );

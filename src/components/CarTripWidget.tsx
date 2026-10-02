@@ -3,6 +3,7 @@ import { useLanguage } from '../context/LanguageContext';
 
 export const CarTripWidget: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const lastLocaleRef = useRef<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const { language } = useLanguage();
 
@@ -10,6 +11,16 @@ export const CarTripWidget: React.FC = () => {
     const container = containerRef.current;
     if (!container) return;
 
+    const localeParam = language === 'FR' ? 'fr' : 'en';
+
+    // If already loaded for this locale, keep it
+    if (lastLocaleRef.current === localeParam && container.children.length > 0) {
+      setIsLoaded(true);
+      window.dispatchEvent(new Event('resize'));
+      return;
+    }
+
+    lastLocaleRef.current = localeParam;
     setIsLoaded(false);
     container.innerHTML = '';
 
@@ -21,7 +32,6 @@ export const CarTripWidget: React.FC = () => {
 
     const script = document.createElement('script');
     script.async = true;
-    const localeParam = language === 'FR' ? 'fr' : 'en';
     script.src = `https://tpemd.com/content?trs=429016&shmarker=569298&locale=${localeParam}&powered_by=true&border_radius=2&plain=true&show_logo=true&color_background=%23FFFFFFFf&color_button=%230921CDff&promo_id=4362&campaign_id=143`;
     script.charset = 'utf-8';
 
@@ -48,9 +58,6 @@ export const CarTripWidget: React.FC = () => {
 
     return () => {
       clearTimeout(fallbackTimer);
-      if (container) {
-        container.innerHTML = '';
-      }
     };
   }, [language]);
 
